@@ -41,3 +41,20 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Docker And Run Container With SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker rm -f nginx-port-forward
+            docker pull ghcr.io/zhanyeye/nginx-port-forward:main
+            docker run --name nginx-port-forward -d --net=host ghcr.io/zhanyeye/nginx-port-forward:main
+    
